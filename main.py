@@ -21,6 +21,17 @@ def main() -> None:
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8", newline="") as handle:
         handle.write(WORD)
+    # Post-write gate: read the file back and confirm it holds exactly
+    # the word, non-empty and a single word with no whitespace, so a
+    # truncated or empty write can never pass silently.
+    with open(OUTPUT_PATH, "r", encoding="utf-8", newline="") as handle:
+        written = handle.read()
+    if written != WORD:
+        raise ValueError("written output does not match the word")
+    if not written:
+        raise ValueError("written output is empty")
+    if written.split() != [written]:
+        raise ValueError("written output is not a single word")
     print(f"wrote {OUTPUT_PATH}: {WORD!r} ({len(WORD)} characters)")
 
 
